@@ -17,6 +17,10 @@ def process_emg(emg):
 #        emg_values.append(emg[0])
 #        emg_values.append(emg[1])
 
+def process_imu(quat, acc, gyro):
+    if get_reading:
+        gestures[name][i].append(quat)
+
 def save_data(data):
     timestr = time.strftime("%Y%m%d-%H%M%S")
     filename = "emg_data_"+timestr
@@ -29,10 +33,12 @@ myo_device.services.set_leds([128, 128, 255], [128, 128, 255])  # purple logo an
 myo_device.services.vibrate(1) # short vibration
 # myo_device.services.emg_filt_notifications()
 myo_device.services.emg_raw_notifications()
-myo_device.services.set_mode(myo.EmgMode.RAW, myo.ImuMode.OFF, myo.ClassifierMode.OFF)
+myo_device.services.imu_notifications()
+myo_device.services.set_mode(myo.EmgMode.RAW, myo.ImuMode.RAW, myo.ClassifierMode.OFF)
 #myo_device.services.set_mode(myo.EmgMode.OFF, myo.ImuMode.OFF, myo.ClassifierMode.OFF)
 time.sleep(1)
 myo_device.add_emg_event_handler(process_emg)
+myo_device.add_imu_event_handler(process_imu)
 
 gestures = dict()
 n_gestures = int(raw_input("How many gestures do you want to perform?: "))

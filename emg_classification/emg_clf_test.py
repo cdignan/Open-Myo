@@ -94,25 +94,10 @@ print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 print("%d" % len(class_labels))
 plt.scatter(X[0:n_segments*n_iterations,0],X[0:n_segments*n_iterations,1],c='red',label=class_labels[0])
 plt.scatter(X[n_segments*n_iterations:2*n_segments*n_iterations,0],X[n_segments*n_iterations:2*n_segments*n_iterations,1],c='blue',label=class_labels[1])
-if len(X[2*n_segments*n_iterations:3*n_segments*n_iterations]) == 1 :
-    plt.scatter(X[2*n_segments*n_iterations:3*n_segments*n_iterations,0],X[2*n_segments*n_iterations:3*n_segments*n_iterations,0],c='green',label=class_labels[2])
-else:
-    plt.scatter(X[2*n_segments*n_iterations:3*n_segments*n_iterations,0],X[2*n_segments*n_iterations:3*n_segments*n_iterations,1],c='green',label=class_labels[2])
-if len(X[3*n_segments*n_iterations:4*n_segments*n_iterations]) == 1 :
-    plt.scatter(X[3*n_segments*n_iterations:4*n_segments*n_iterations,0],X[3*n_segments*n_iterations:4*n_segments*n_iterations,0],c='cyan',label=class_labels[3])
-else:
-    plt.scatter(X[3*n_segments*n_iterations:4*n_segments*n_iterations,0],X[3*n_segments*n_iterations:4*n_segments*n_iterations,1],c='cyan',label=class_labels[3])
-if len(X[4*n_segments*n_iterations:5*n_segments*n_iterations]) == 1 :
-    plt.scatter(X[4*n_segments*n_iterations:5*n_segments*n_iterations,0],X[4*n_segments*n_iterations:5*n_segments*n_iterations,0],c='cyan',label=class_labels[4])
-else:
-    plt.scatter(X[4*n_segments*n_iterations:5*n_segments*n_iterations,0],X[4*n_segments*n_iterations:5*n_segments*n_iterations,1],c='cyan',label=class_labels[4])
-if len(X[5*n_segments*n_iterations:6*n_segments*n_iterations]) == 1 :
-    plt.scatter(X[5*n_segments*n_iterations:6*n_segments*n_iterations,0],X[5*n_segments*n_iterations:6*n_segments*n_iterations,0],c='cyan',label=class_labels[5])
-else:
-    plt.scatter(X[5*n_segments*n_iterations:6*n_segments*n_iterations,0],X[5*n_segments*n_iterations:6*n_segments*n_iterations,1],c='cyan',label=class_labels[5])
-if len(X[6*n_segments*n_iterations:7*n_segments*n_iterations]) == 1 :
-    plt.scatter(X[6*n_segments*n_iterations:7*n_segments*n_iterations,0],X[6*n_segments*n_iterations:7*n_segments*n_iterations,0],c='cyan',label=class_labels[6])
-else:
-    plt.scatter(X[6*n_segments*n_iterations:7*n_segments*n_iterations,0],X[6*n_segments*n_iterations:7*n_segments*n_iterations,1],c='cyan',label=class_labels[6])
-plt.legend(scatterpoints=1,loc='center left', bbox_to_anchor=(1, 0.5))
+plt.scatter(X[2*n_segments*n_iterations:3*n_segments*n_iterations,0],X[2*n_segments*n_iterations:3*n_segments*n_iterations,1],c='green',label=class_labels[2])
+#plt.scatter(X[3*n_segments*n_iterations:4*n_segments*n_iterations,0],X[3*n_segments*n_iterations:4*n_segments*n_iterations,1],c='cyan',label=class_labels[3])
+#plt.scatter(X[4*n_segments*n_iterations:5*n_segments*n_iterations,0],X[4*n_segments*n_iterations:5*n_segments*n_iterations,1],c='magenta',label=class_labels[4])
+#plt.scatter(X[5*n_segments*n_iterations:6*n_segments*n_iterations,0],X[5*n_segments*n_iterations:6*n_segments*n_iterations,1],c='lime',label=class_labels[5])
+#plt.scatter(X[6*n_segments*n_iterations:7*n_segments*n_iterations,0],X[6*n_segments*n_iterations:7*n_segments*n_iterations,1],c='orange',label=class_labels[6])
+plt.legend(scatterpoints=1,loc='center left', bbox_to_anchor=(0, 0.5))
 plt.show()
