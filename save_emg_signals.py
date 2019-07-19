@@ -10,16 +10,27 @@ import pickle
 
 get_reading = False
 
+emg_imu_0 = [0] * 12
+emg_imu_1 = [0] * 12
+
 def process_emg(emg):
     if get_reading:
-        gestures[name][i].append(emg[0])
-        gestures[name][i].append(emg[1])
+        for j in range(8):
+            emg_imu_0[j] = emg[0][j]
+        for j in range(8):
+            emg_imu_1[j] = emg[1][j]
+        gestures[name][i].append(emg_imu_0)
+        gestures[name][i].append(emg_imu_1)
 #        emg_values.append(emg[0])
 #        emg_values.append(emg[1])
 
 def process_imu(quat, acc, gyro):
     if get_reading:
-        gestures[name][i].append(quat)
+        for j in range(4):
+            emg_imu_0[j+8] = quat[j]
+            emg_imu_1[j+8] = quat[j]
+        gestures[name][i].append(emg_imu_0)
+        gestures[name][i].append(emg_imu_1)
 
 def save_data(data):
     timestr = time.strftime("%Y%m%d-%H%M%S")

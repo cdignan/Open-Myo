@@ -89,6 +89,10 @@ def features(segment,feature_list):
         features[0,i+5] = feature(segment[5])
         features[0,i+6] = feature(segment[6])
         features[0,i+7] = feature(segment[7])
+        features[0,i+8] = feature(segment[8])
+        features[0,i+9] = feature(segment[9])
+        features[0,i+10] = feature(segment[10])
+        features[0,i+11] = feature(segment[11])
         i +=  len(segment)
     return features
 

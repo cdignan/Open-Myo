@@ -10,12 +10,12 @@ import matplotlib.pyplot as plt
 import pickle
 
 # Data loading
-with open("../emg_data/emg_data_20190717-162923.pkl",'r') as fp:
+with open("../emg_data/emg_data_20190719-153238.pkl",'r') as fp:
     emg_data = pickle.load(fp)
 
 n_classes = len(emg_data)
 n_iterations = [len(value) for value in emg_data.values()][0]
-n_channels = 8
+n_channels = 12
 n_signals = n_classes*n_iterations*n_channels
 emg = list()
 segmented_emg = list()
@@ -59,7 +59,11 @@ for i in range(0,n_signals,n_channels):
                                           segmented_emg[i+4][:,j],
                                           segmented_emg[i+5][:,j],
                                           segmented_emg[i+6][:,j],
-                                          segmented_emg[i+7][:,j]),feature_list)
+                                          segmented_emg[i+7][:,j],
+                                          segmented_emg[i+8][:,j],
+                                          segmented_emg[i+9][:,j],
+                                          segmented_emg[i+10][:,j],
+                                          segmented_emg[i+11][:,j]),feature_list)
         n = n + 1
 
 # Target matrix generation
