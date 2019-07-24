@@ -27,8 +27,8 @@ def process_emg(emg):
 def process_imu(quat, acc, gyro):
     if get_reading:
         for j in range(4):
-            emg_imu_0[j+8] = quat[j]
-            emg_imu_1[j+8] = quat[j]
+            emg_imu_0[j+8] = int(quat[j] * 16384)
+            emg_imu_1[j+8] = int(quat[j] * 16384)
         gestures[name][i].append(emg_imu_0)
         gestures[name][i].append(emg_imu_1)
 
@@ -52,16 +52,16 @@ myo_device.add_emg_event_handler(process_emg)
 myo_device.add_imu_event_handler(process_imu)
 
 gestures = dict()
-n_gestures = int(raw_input("How many gestures do you want to perform?: "))
-n_iterations = int(raw_input("How many times do you want to repeat each gesture?: "))
-runtime = int(raw_input("How many seconds do you want each gesture to last?: ")) 
+n_gestures = int(input("How many gestures do you want to perform?: "))
+n_iterations = int(input("How many times do you want to repeat each gesture?: "))
+runtime = int(input("How many seconds do you want each gesture to last?: ")) 
 
 for g in range(n_gestures):
-    name = raw_input("Enter the name of gesture number {}: ".format(g+1))
+    name = input("Enter the name of gesture number {}: ".format(g+1))
     gestures[name] = list()
     for i in range(n_iterations):
         gestures[name].append(list())
-        raw_input("Iteration {}. Press enter to begin recording.".format(i+1))
+        input("Iteration {}. Press enter to begin recording.".format(i+1))
         myo_device.services.vibrate(1) # short vibration
         time.sleep(2)
 #        myo_device.services.set_mode(myo.EmgMode.RAW, myo.ImuMode.OFF, myo.ClassifierMode.OFF)
