@@ -10,9 +10,10 @@ import matplotlib.pyplot as plt
 import pickle
 
 # Data loading
-with open("../emg_data/emg_data_20190724-python3.pkl",'rb') as fp:
+with open("../emg_data/emg_data_20190726-180344.pkl",'rb') as fp:
     emg_data = pickle.load(fp)
 
+print(emg_data['fist-down'])
 n_classes = len(emg_data)
 n_iterations = [len(value) for value in emg_data.values()][0]
 n_channels = 12
