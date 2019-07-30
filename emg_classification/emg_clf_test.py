@@ -13,9 +13,11 @@ import pickle
 with open("../emg_data/emg_data_20190726-180344.pkl",'rb') as fp:
     emg_data = pickle.load(fp)
 
-print(emg_data['fist-down'])
+# the number of gestures
 n_classes = len(emg_data)
+# the number of times each gesture is performed
 n_iterations = [len(value) for value in emg_data.values()][0]
+# the number of data points per gesture - 8 for EMG, 4 for IMU
 n_channels = 12
 n_signals = n_classes*n_iterations*n_channels
 emg = list()
@@ -27,32 +29,44 @@ class_labels = list()
 #        for c in range(1,n_channels+1):
 #            emg.append(emg_data['motion'+str(m)+'_ch'+str(c)][:,i]) #motion1_ch1_i1, motion1_ch2_i1, motion1_ch1_i2, motion1_ch2_i2
 
+# loop through each gesture
 for g in emg_data.keys():
+# create list of gesture names
     class_labels.append(g)
+# loop through each iteration of each gesture
     for i in range(n_iterations):
+# loop through all 12 data points from each iteration
         for c in range(n_channels):
+# create a list of arrays, where, for example, list(zip(*emg_data[0][1]))[2] would be the 2nd iteration of the 1st gesture, and the 3rd (of 8) EMG reading
             emg.append(np.array(list(zip(*emg_data[g][i]))[c][0:999]))
 
 #for z in range(n_signals):
 #    emg[z] = emg[z]*(5/2)/2**24
 
-# Segmentation
+# Segmentation - 72 arrays, 1 for each data point from each individual gesture (12*6)
 for n in range(n_signals):
     segmented_emg.append(fex.segmentation(emg[n],n_samples=50))
 
 # Feature calculation
 feature_list = [fex.mav, fex.rms, fex.var, fex.ssi, fex.zc, fex.wl, fex.ssc, fex.wamp]
 
+# get minimum length of segments (should be 9)
 n_segments = len(segmented_emg[0][0])
 for i in range(0,n_signals,n_channels):
     if len(segmented_emg[i][0]) < n_segments :
         n_segments = len(segmented_emg[i][0]) 
+# get length of feature list (should be 8)
 n_features = len(feature_list)
+# initialize a 54 x 96 matrix of 0s
 feature_matrix = np.zeros((n_classes*n_iterations*n_segments,n_features*n_channels))
 n = 0
 
+# loop - 0, 12, 24, 36, 48, 60, stop at 72
 for i in range(0,n_signals,n_channels):
+# j is 0 through 8 - the index of the column in the array
     for j in range(n_segments):
+# n goes from 0 to 54, where each index is a 96 element array -
+# so the first 9 will be for gesture 1, then gesture 2, etc.
         feature_matrix[n] = fex.features((segmented_emg[i][:,j],
                                           segmented_emg[i+1][:,j],
                                           segmented_emg[i+2][:,j],
@@ -70,7 +84,7 @@ for i in range(0,n_signals,n_channels):
 # Target matrix generation
 y = fex.generate_target(n_iterations*n_segments,class_labels)
 
-# Dimensionality reduction and feature scaling
+# Dimensionality reduction and feature scaling - 9 data points for each gesture
 [X,reductor,scaler] = fex.feature_scaling(feature_matrix, y)
 
 # Split dataset into training and testing datasets
@@ -96,7 +110,7 @@ print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 #grid = GridSearchCV(SVC(),param_grid=param_grid,cv=cv)
 #grid.fit(X,y)
 #print("The best parameters are %s with a score of %0.2f" % (grid.best_params_,grid.best_score_))
-print("%d" % len(class_labels))
+#print("%d" % len(class_labels))
 plt.scatter(X[0:n_segments*n_iterations,0],X[0:n_segments*n_iterations,1],c='red',label=class_labels[0])
 plt.scatter(X[n_segments*n_iterations:2*n_segments*n_iterations,0],X[n_segments*n_iterations:2*n_segments*n_iterations,1],c='blue',label=class_labels[1])
 plt.scatter(X[2*n_segments*n_iterations:3*n_segments*n_iterations,0],X[2*n_segments*n_iterations:3*n_segments*n_iterations,1],c='green',label=class_labels[2])

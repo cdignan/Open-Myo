@@ -18,22 +18,27 @@ def segmentation(emg, n_samples = 150):
     length = 0
     return segmented_emg
 
+# mean absolute value
 def mav(segment):
     mav = np.mean(np.abs(segment))
     return mav
 
+# root mean square
 def rms(segment):
     rms = np.sqrt(np.mean(np.power(segment,2)))
     return rms
 
+# variance
 def var(segment):
     var = np.var(segment)
     return var
 
+# sum of squares
 def ssi(segment):
     ssi = np.sum(np.abs(np.power(segment,2)))
     return ssi
 
+# confidence interval
 def zc(segment):
     nz_segment = list()
     nz_indices = np.nonzero(segment)[0] #Finds the indices of the segment with nonzero values
@@ -46,6 +51,7 @@ def zc(segment):
             zc = zc + 1
     return zc
 
+# sum of differences
 def wl(segment):
     wl = np.sum(np.abs(np.diff(segment)))
     return wl
