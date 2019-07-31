@@ -13,6 +13,9 @@ import pickle
 with open("../emg_data/emg_data_20190726-180344.pkl",'rb') as fp:
     emg_data = pickle.load(fp)
 
+with open("../emg_data/emg_data_20190731-160239.pkl",'rb') as fp:
+    emg_test_data = pickle.load(fp)
+
 # the number of gestures
 n_classes = len(emg_data)
 # the number of times each gesture is performed
@@ -23,6 +26,11 @@ n_signals = n_classes*n_iterations*n_channels
 emg = list()
 segmented_emg = list()
 class_labels = list()
+
+n_iterations_test = [len(value) for value in emg_test_data.values()][0]
+n_signals_test = n_classes*n_iterations_test*n_channels
+emg_test = list()
+segmented_emg_test = list()
 
 #for m in range(1,n_classes+1):
 #    for i in range(n_iterations):
@@ -40,12 +48,20 @@ for g in emg_data.keys():
 # create a list of arrays, where, for example, list(zip(*emg_data[0][1]))[2] would be the 2nd iteration of the 1st gesture, and the 3rd (of 8) EMG reading
             emg.append(np.array(list(zip(*emg_data[g][i]))[c][0:999]))
 
+for g in emg_test_data.keys():
+    for i in range(n_iterations_test):
+        for c in range(n_channels):
+            emg_test.append(np.array(list(zip(*emg_test_data[g][i]))[c][0:999]))
+
 #for z in range(n_signals):
 #    emg[z] = emg[z]*(5/2)/2**24
 
 # Segmentation - 72 arrays, 1 for each data point from each individual gesture (12*6)
 for n in range(n_signals):
     segmented_emg.append(fex.segmentation(emg[n],n_samples=50))
+
+for n in range(n_signals_test):
+    segmented_emg_test.append(fex.segmentation(emg_test[n],n_samples=50))
 
 # Feature calculation
 feature_list = [fex.mav, fex.rms, fex.var, fex.ssi, fex.zc, fex.wl, fex.ssc, fex.wamp]
@@ -54,13 +70,20 @@ feature_list = [fex.mav, fex.rms, fex.var, fex.ssi, fex.zc, fex.wl, fex.ssc, fex
 n_segments = len(segmented_emg[0][0])
 for i in range(0,n_signals,n_channels):
     if len(segmented_emg[i][0]) < n_segments :
-        n_segments = len(segmented_emg[i][0]) 
+        n_segments = len(segmented_emg[i][0])
+
+n_segments_test = len(segmented_emg_test[0][0])
+for i in range(0,n_signals_test,n_channels):
+    if len(segmented_emg_test[i][0]) < n_segments_test :
+        n_segments_test = len(segmented_emg_test[i][0])
+
 # get length of feature list (should be 8)
 n_features = len(feature_list)
 # initialize a 54 x 96 matrix of 0s
 feature_matrix = np.zeros((n_classes*n_iterations*n_segments,n_features*n_channels))
-n = 0
+feature_matrix_test = np.zeros((n_classes*n_iterations_test*n_segments_test,n_features*n_channels))
 
+n = 0
 # loop - 0, 12, 24, 36, 48, 60, stop at 72
 for i in range(0,n_signals,n_channels):
 # j is 0 through 8 - the index of the column in the array
@@ -81,14 +104,37 @@ for i in range(0,n_signals,n_channels):
                                           segmented_emg[i+11][:,j]),feature_list)
         n = n + 1
 
+k = 0
+for i in range(0,n_signals_test,n_channels):
+    for j in range(n_segments_test):
+        feature_matrix_test[k] = fex.features((segmented_emg_test[i][:,j],
+                                               segmented_emg_test[i+1][:,j],
+                                               segmented_emg_test[i+2][:,j],
+                                               segmented_emg_test[i+3][:,j],
+                                               segmented_emg_test[i+4][:,j],
+                                               segmented_emg_test[i+5][:,j],
+                                               segmented_emg_test[i+6][:,j],
+                                               segmented_emg_test[i+7][:,j],
+                                               segmented_emg_test[i+8][:,j],
+                                               segmented_emg_test[i+9][:,j],
+                                               segmented_emg_test[i+10][:,j],
+                                               segmented_emg_test[i+11][:,j]),feature_list)
+        k = k + 1
+
 # Target matrix generation
-y = fex.generate_target(n_iterations*n_segments,class_labels)
+y_train = fex.generate_target(n_iterations*n_segments,class_labels)
+y_test = fex.generate_target(n_iterations_test*n_segments_test,class_labels)
 
 # Dimensionality reduction and feature scaling - 9 data points for each gesture
-[X,reductor,scaler] = fex.feature_scaling(feature_matrix, y)
+[X_train,reductor,scaler] = fex.feature_scaling(feature_matrix, y_train)
+[X_test,reductor_test,scaler_test] = fex.feature_scaling(feature_matrix_test, y_test)
 
 # Split dataset into training and testing datasets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+print(X_train)
+print(y_train)
+print(X_test)
+print(y_test)
 
 # Classifier training
 classifier = SVC(kernel='rbf',C=10,gamma=10)
@@ -111,9 +157,12 @@ print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 #grid.fit(X,y)
 #print("The best parameters are %s with a score of %0.2f" % (grid.best_params_,grid.best_score_))
 #print("%d" % len(class_labels))
-plt.scatter(X[0:n_segments*n_iterations,0],X[0:n_segments*n_iterations,1],c='red',label=class_labels[0])
-plt.scatter(X[n_segments*n_iterations:2*n_segments*n_iterations,0],X[n_segments*n_iterations:2*n_segments*n_iterations,1],c='blue',label=class_labels[1])
-plt.scatter(X[2*n_segments*n_iterations:3*n_segments*n_iterations,0],X[2*n_segments*n_iterations:3*n_segments*n_iterations,1],c='green',label=class_labels[2])
+plt.scatter(X_train[0:n_segments*n_iterations,0],X_train[0:n_segments*n_iterations,1],c='red',label=class_labels[0])
+plt.scatter(X_test[0:n_segments_test*n_iterations_test,0],X_test[0:n_segments_test*n_iterations_test,1],c='orange')
+plt.scatter(X_train[n_segments*n_iterations:2*n_segments*n_iterations,0],X_train[n_segments*n_iterations:2*n_segments*n_iterations,1],c='blue',label=class_labels[1])
+plt.scatter(X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,0],X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,1],c='cyan')
+plt.scatter(X_train[2*n_segments*n_iterations:3*n_segments*n_iterations,0],X_train[2*n_segments*n_iterations:3*n_segments*n_iterations,1],c='green',label=class_labels[2])
+plt.scatter(X_test[2*n_segments_test*n_iterations_test:3*n_segments_test*n_iterations_test,0],X_test[2*n_segments_test*n_iterations_test:3*n_segments_test*n_iterations_test,1],c='lime')
 #plt.scatter(X[3*n_segments*n_iterations:4*n_segments*n_iterations,0],X[3*n_segments*n_iterations:4*n_segments*n_iterations,1],c='cyan',label=class_labels[3])
 #plt.scatter(X[4*n_segments*n_iterations:5*n_segments*n_iterations,0],X[4*n_segments*n_iterations:5*n_segments*n_iterations,1],c='magenta',label=class_labels[4])
 #plt.scatter(X[5*n_segments*n_iterations:6*n_segments*n_iterations,0],X[5*n_segments*n_iterations:6*n_segments*n_iterations,1],c='lime',label=class_labels[5])
