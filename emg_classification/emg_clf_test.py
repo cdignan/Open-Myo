@@ -38,7 +38,7 @@ segmented_emg_test = list()
 #            emg.append(emg_data['motion'+str(m)+'_ch'+str(c)][:,i]) #motion1_ch1_i1, motion1_ch2_i1, motion1_ch1_i2, motion1_ch2_i2
 
 # loop through each gesture
-for g in emg_data.keys():
+for g in sorted(emg_data):
 # create list of gesture names
     class_labels.append(g)
 # loop through each iteration of each gesture
@@ -48,7 +48,7 @@ for g in emg_data.keys():
 # create a list of arrays, where, for example, list(zip(*emg_data[0][1]))[2] would be the 2nd iteration of the 1st gesture, and the 3rd (of 8) EMG reading
             emg.append(np.array(list(zip(*emg_data[g][i]))[c][0:999]))
 
-for g in emg_test_data.keys():
+for g in sorted(emg_test_data):
     for i in range(n_iterations_test):
         for c in range(n_channels):
             emg_test.append(np.array(list(zip(*emg_test_data[g][i]))[c][0:999]))
@@ -131,10 +131,10 @@ y_test = fex.generate_target(n_iterations_test*n_segments_test,class_labels)
 
 # Split dataset into training and testing datasets
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
-print(X_train)
-print(y_train)
-print(X_test)
-print(y_test)
+#print(X_train)
+#print(y_train)
+#print(X_test)
+#print(y_test)
 
 # Classifier training
 classifier = SVC(kernel='rbf',C=10,gamma=10)
@@ -142,6 +142,16 @@ classifier.fit(X_train,y_train)
 
 # Classification
 predict = classifier.predict(X_test)
+predictions = np.zeros((n_classes*n_iterations_test,n_classes))
+for i in range(n_classes):
+    for j in range(n_iterations_test):
+        class_array = np.zeros(n_classes)
+        for k in range(n_segments_test):
+            for l in range(n_classes):
+                if (predict[i*n_segments_test*n_iterations_test+j*n_segments_test+k] == class_labels[l]):
+                    class_array[l] = class_array[l] + 1
+        for l in range(n_classes):
+            predictions[i*n_iterations_test+j,l] = class_array[l]/n_segments_test
 print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 
 ## Cross validation (optional; takes a lot of time)
@@ -157,7 +167,11 @@ print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 #grid.fit(X,y)
 #print("The best parameters are %s with a score of %0.2f" % (grid.best_params_,grid.best_score_))
 #print("%d" % len(class_labels))
-plt.scatter(X_train[0:n_segments*n_iterations,0],X_train[0:n_segments*n_iterations,1],c='red',label=class_labels[0])
+colors = ['red', 'magenta', 'purple']
+n = 0
+for i in range(0,n_segments*n_iterations,n_segments):
+    plt.scatter(X_train[i:i+n_segments,0],X_train[i:i+n_segments,1],c=colors[n],label=class_labels[0]+str(n))
+    n = n + 1
 plt.scatter(X_test[0:n_segments_test*n_iterations_test,0],X_test[0:n_segments_test*n_iterations_test,1],c='orange')
 plt.scatter(X_train[n_segments*n_iterations:2*n_segments*n_iterations,0],X_train[n_segments*n_iterations:2*n_segments*n_iterations,1],c='blue',label=class_labels[1])
 plt.scatter(X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,0],X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,1],c='cyan')
