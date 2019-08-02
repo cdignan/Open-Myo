@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 import pickle
 
 # Data loading
-with open("../emg_data/emg_data_20190726-180344.pkl",'rb') as fp:
+with open("../emg_data/emg_data_20190802-014546.pkl",'rb') as fp:
     emg_data = pickle.load(fp)
 
-with open("../emg_data/emg_data_20190731-160239.pkl",'rb') as fp:
+with open("../emg_data/emg_data_20190802-020302.pkl",'rb') as fp:
     emg_test_data = pickle.load(fp)
 
 # the number of gestures
@@ -152,6 +152,8 @@ for i in range(n_classes):
                     class_array[l] = class_array[l] + 1
         for l in range(n_classes):
             predictions[i*n_iterations_test+j,l] = class_array[l]/n_segments_test
+#print(predict)
+#print(predictions)
 print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 
 ## Cross validation (optional; takes a lot of time)
@@ -167,16 +169,24 @@ print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 #grid.fit(X,y)
 #print("The best parameters are %s with a score of %0.2f" % (grid.best_params_,grid.best_score_))
 #print("%d" % len(class_labels))
-colors = ['red', 'magenta', 'purple']
-n = 0
-for i in range(0,n_segments*n_iterations,n_segments):
-    plt.scatter(X_train[i:i+n_segments,0],X_train[i:i+n_segments,1],c=colors[n],label=class_labels[0]+str(n))
-    n = n + 1
-plt.scatter(X_test[0:n_segments_test*n_iterations_test,0],X_test[0:n_segments_test*n_iterations_test,1],c='orange')
+plt.scatter(X_train[0:n_segments*n_iterations,0],X_train[0:n_segments*n_iterations,1],c='red',label=class_labels[0])
+plt.scatter(X_test[0:n_segments_test*n_iterations_test,0],X_test[0:n_segments_test*n_iterations_test,1],c='red')
 plt.scatter(X_train[n_segments*n_iterations:2*n_segments*n_iterations,0],X_train[n_segments*n_iterations:2*n_segments*n_iterations,1],c='blue',label=class_labels[1])
-plt.scatter(X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,0],X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,1],c='cyan')
+plt.scatter(X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,0],X_test[n_segments_test*n_iterations_test:2*n_segments_test*n_iterations_test,1],c='blue')
 plt.scatter(X_train[2*n_segments*n_iterations:3*n_segments*n_iterations,0],X_train[2*n_segments*n_iterations:3*n_segments*n_iterations,1],c='green',label=class_labels[2])
-plt.scatter(X_test[2*n_segments_test*n_iterations_test:3*n_segments_test*n_iterations_test,0],X_test[2*n_segments_test*n_iterations_test:3*n_segments_test*n_iterations_test,1],c='lime')
+plt.scatter(X_test[2*n_segments_test*n_iterations_test:3*n_segments_test*n_iterations_test,0],X_test[2*n_segments_test*n_iterations_test:3*n_segments_test*n_iterations_test,1],c='green')
+plt.scatter(X_train[3*n_segments*n_iterations:4*n_segments*n_iterations,0],X_train[3*n_segments*n_iterations:4*n_segments*n_iterations,1],c='cyan',label=class_labels[3])
+plt.scatter(X_test[3*n_segments_test*n_iterations_test:4*n_segments_test*n_iterations_test,0],X_test[3*n_segments_test*n_iterations_test:4*n_segments_test*n_iterations_test,1],c='cyan')
+plt.scatter(X_train[4*n_segments*n_iterations:5*n_segments*n_iterations,0],X_train[4*n_segments*n_iterations:5*n_segments*n_iterations,1],c='magenta',label=class_labels[4])
+plt.scatter(X_test[4*n_segments_test*n_iterations_test:5*n_segments_test*n_iterations_test,0],X_test[4*n_segments_test*n_iterations_test:5*n_segments_test*n_iterations_test,1],c='magenta')
+plt.scatter(X_train[5*n_segments*n_iterations:6*n_segments*n_iterations,0],X_train[5*n_segments*n_iterations:6*n_segments*n_iterations,1],c='lime',label=class_labels[5])
+plt.scatter(X_test[5*n_segments_test*n_iterations_test:6*n_segments_test*n_iterations_test,0],X_test[5*n_segments_test*n_iterations_test:6*n_segments_test*n_iterations_test,1],c='lime')
+plt.scatter(X_train[6*n_segments*n_iterations:7*n_segments*n_iterations,0],X_train[6*n_segments*n_iterations:7*n_segments*n_iterations,1],c='orange',label=class_labels[6])
+plt.scatter(X_test[6*n_segments_test*n_iterations_test:7*n_segments_test*n_iterations_test,0],X_test[6*n_segments_test*n_iterations_test:7*n_segments_test*n_iterations_test,1],c='orange')
+plt.scatter(X_train[7*n_segments*n_iterations:8*n_segments*n_iterations,0],X_train[7*n_segments*n_iterations:8*n_segments*n_iterations,1],c='yellow',label=class_labels[7])
+plt.scatter(X_test[7*n_segments_test*n_iterations_test:8*n_segments_test*n_iterations_test,0],X_test[7*n_segments_test*n_iterations_test:8*n_segments_test*n_iterations_test,1],c='yellow')
+plt.scatter(X_train[8*n_segments*n_iterations:9*n_segments*n_iterations,0],X_train[8*n_segments*n_iterations:9*n_segments*n_iterations,1],c='purple',label=class_labels[8])
+plt.scatter(X_test[8*n_segments_test*n_iterations_test:9*n_segments_test*n_iterations_test,0],X_test[8*n_segments_test*n_iterations_test:9*n_segments_test*n_iterations_test,1],c='purple')
 #plt.scatter(X[3*n_segments*n_iterations:4*n_segments*n_iterations,0],X[3*n_segments*n_iterations:4*n_segments*n_iterations,1],c='cyan',label=class_labels[3])
 #plt.scatter(X[4*n_segments*n_iterations:5*n_segments*n_iterations,0],X[4*n_segments*n_iterations:5*n_segments*n_iterations,1],c='magenta',label=class_labels[4])
 #plt.scatter(X[5*n_segments*n_iterations:6*n_segments*n_iterations,0],X[5*n_segments*n_iterations:6*n_segments*n_iterations,1],c='lime',label=class_labels[5])
