@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 import pickle
 
 # Data loading
-with open("../emg_data/emg_data_20190802-014546.pkl",'rb') as fp:
+with open("../emg_data/emg_data_20190805-161526.pkl",'rb') as fp:
     emg_data = pickle.load(fp)
 
-with open("../emg_data/emg_data_20190802-020302.pkl",'rb') as fp:
+with open("../emg_data/emg_data_20190805-160659.pkl",'rb') as fp:
     emg_test_data = pickle.load(fp)
 
 # the number of gestures

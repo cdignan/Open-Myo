@@ -20,7 +20,7 @@ def process_battery(batt):
     print("Battery level: %d" % batt)
 
 def led_emg(emg):
-    if(emg[0] > 80):
+    if(emg[0][0] > 80):
         myo_device.services.set_leds([255, 0, 0], [128, 128, 255])
     else:
         myo_device.services.set_leds([128, 128, 255], [128, 128, 255])

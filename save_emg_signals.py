@@ -27,8 +27,8 @@ def process_emg(emg):
 def process_imu(quat, acc, gyro):
     if get_reading:
         for j in range(4):
-            emg_imu_0[j+8] = int(quat[j] * 16384)
-            emg_imu_1[j+8] = int(quat[j] * 16384)
+            emg_imu_0[j+8] = int(quat[j] * 16384 * 2)
+            emg_imu_1[j+8] = int(quat[j] * 16384 * 2)
         gestures[name][i].append(emg_imu_0.copy())
         gestures[name][i].append(emg_imu_1.copy())
 
