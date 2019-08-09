@@ -37,10 +37,19 @@ segmented_emg_test = list()
 #        for c in range(1,n_channels+1):
 #            emg.append(emg_data['motion'+str(m)+'_ch'+str(c)][:,i]) #motion1_ch1_i1, motion1_ch2_i1, motion1_ch1_i2, motion1_ch2_i2
 
+# going to do this manually for now just to make sure that the prediction matrices from both modules line up
+class_labels.append('man')
+class_labels.append('skimmer')
+class_labels.append('music')
+class_labels.append('green')
+class_labels.append('bright')
+class_labels.append('drawer')
+class_labels.append('away')
+class_labels.append('learn')
+class_labels.append('accept')
+
 # loop through each gesture
-for g in sorted(emg_data):
-# create list of gesture names
-    class_labels.append(g)
+for g in class_labels:
 # loop through each iteration of each gesture
     for i in range(n_iterations):
 # loop through all 12 data points from each iteration
@@ -48,7 +57,7 @@ for g in sorted(emg_data):
 # create a list of arrays, where, for example, list(zip(*emg_data[0][1]))[2] would be the 2nd iteration of the 1st gesture, and the 3rd (of 8) EMG reading
             emg.append(np.array(list(zip(*emg_data[g][i]))[c][0:999]))
 
-for g in sorted(emg_test_data):
+for g in class_labels:
     for i in range(n_iterations_test):
         for c in range(n_channels):
             emg_test.append(np.array(list(zip(*emg_test_data[g][i]))[c][0:999]))
@@ -131,10 +140,10 @@ y_test = fex.generate_target(n_iterations_test*n_segments_test,class_labels)
 
 # Split dataset into training and testing datasets
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
-#print(X_train)
-#print(y_train)
-#print(X_test)
-#print(y_test)
+print(X_train)
+print(y_train)
+print(X_test)
+print(y_test)
 
 # Classifier training
 classifier = SVC(kernel='rbf',C=10,gamma=10)
@@ -152,8 +161,8 @@ for i in range(n_classes):
                     class_array[l] = class_array[l] + 1
         for l in range(n_classes):
             predictions[i*n_iterations_test+j,l] = class_array[l]/n_segments_test
-#print(predict)
-#print(predictions)
+print(predict)
+print(predictions)
 print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 
 ## Cross validation (optional; takes a lot of time)
