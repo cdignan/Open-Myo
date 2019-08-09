@@ -9,6 +9,10 @@ from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 import pickle
 
+def save_data(data):
+    with open("prediction.pkl", 'wb') as fp:
+        pickle.dump(data, fp)
+
 # Data loading
 with open("../emg_data/emg_data_20190806-161339.pkl",'rb') as fp:
     emg_data = pickle.load(fp)
@@ -47,6 +51,17 @@ class_labels.append('drawer')
 class_labels.append('away')
 class_labels.append('learn')
 class_labels.append('accept')
+
+class_index = list()
+class_index.append('accept')
+class_index.append('away')
+class_index.append('bright')
+class_index.append('drawer')
+class_index.append('green')
+class_index.append('learn')
+class_index.append('man')
+class_index.append('music')
+class_index.append('skimmer')
 
 # loop through each gesture
 for g in class_labels:
@@ -157,12 +172,13 @@ for i in range(n_classes):
         class_array = np.zeros(n_classes)
         for k in range(n_segments_test):
             for l in range(n_classes):
-                if (predict[i*n_segments_test*n_iterations_test+j*n_segments_test+k] == class_labels[l]):
+                if (predict[i*n_segments_test*n_iterations_test+j*n_segments_test+k] == class_index[l]):
                     class_array[l] = class_array[l] + 1
         for l in range(n_classes):
             predictions[i*n_iterations_test+j,l] = class_array[l]/n_segments_test
 print(predict)
 print(predictions)
+#save_data(predictions)
 print("Classification accuracy = %0.5f." %(classifier.score(X_test,y_test)))
 
 ## Cross validation (optional; takes a lot of time)
